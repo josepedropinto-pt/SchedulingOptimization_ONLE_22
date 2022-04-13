@@ -18,3 +18,10 @@ class Student:
         self.student_name = name
         self.student_classes = classes
 
+
+class Room:
+    def __init__(self, name, tuc, capacity, dist):
+        self.room_name = name
+        self.room_tuc = tuc
+        self.room_capacity = capacity
+        self.room_distance = dist
