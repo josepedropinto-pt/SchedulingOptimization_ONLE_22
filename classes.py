@@ -1,9 +1,10 @@
 #!/usr/bin/python3
 
 class Professor:
-    def __init__(self, name, classes):
+    def __init__(self, name, classes, atendimento):
         self.professor_name = name
         self.professor_classes = classes
+        self.professor_atendimento = atendimento
 
 
 class Course:
@@ -25,3 +26,18 @@ class Room:
         self.room_tuc = tuc
         self.room_capacity = capacity
         self.room_distance = dist
+
+
+class Group:
+    def __init__(self,id, capacity, classes):
+        self.group_id = id
+        self.group_capacity = capacity
+        self.group_classes = classes
+
+
+class Block:
+    def __init__(self, id, day, hour):
+        self.block_id = id
+        self.block_day = day
+        self.block_hour = hour
+
