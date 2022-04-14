@@ -11,7 +11,7 @@ class Horario:
         # <---------------------------------------------------------------------->
         self.alunos_lista = []
         self.professores_lista = []
-        self.UCs_lista = []
+        self.uc_lista = []
         self.blocos_lista = []
         self.salas_lista = []
         self.grupos_lista = []
@@ -29,14 +29,14 @@ class Horario:
     def baseDados(self):
         self.alunos_lista = criarAlunos()
         self.professores_lista = criarProfessores()
-        self.UCs_lista = criarUCs()
+        self.uc_lista = criarUCs()
         self.blocos_lista = criarBlocos()
         self.grupos_lista = criarGrupos()
         self.salas_lista = criarSalas()
 
     def selecaoHorario(self):
         # Correr as UCs
-        for uc in self.UCs_lista:
+        for uc in self.uc_lista:
             print(uc.uc_nome)
 
             # Correr todos os Grupos
