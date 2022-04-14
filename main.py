@@ -1,74 +1,71 @@
 #!/usr/bin/python3
 
-from classes import Professor, Course, Student
 from data import *
 from colorama import Fore, Back, Style
 
 
-class Schedule:
+class Horario:
     def __init__(self):
         # <---------------------------------------------------------------------->
         # <-------------------Variable Initialization---------------------------->
         # <---------------------------------------------------------------------->
-        self.studentsList = []
-        self.professorsList = []
-        self.coursesList = []
-        self.blocksList = []
-        self.roomsList = []
-        self.groupsList = []
-        self.decision_variable_x1 = False
-        self.decision_variable_x2 = False
-        self.decision_variable_y1 = False
-        self.constrain1_valid = False
-        self.constrain2_valid = False
-        self.constrain3_valid = False
-        self.constrain4_valid = False
+        self.alunos_lista = []
+        self.professores_lista = []
+        self.UCs_lista = []
+        self.blocos_lista = []
+        self.salas_lista = []
+        self.grupos_lista = []
+        self.variavel_decisao_x1 = False
+        self.variavel_decisao_x2 = False
+        self.variavel_decisao_y1 = False
+        self.restricao1_valida = False
+        self.restricao2_valida = False
+        self.restricao3_valida = False
+        self.restricao4_valida = False
 
+        self.baseDados()
+        self.selecaoHorario()
 
-        self.dataSetup()
-        self.scheduling()
+    def baseDados(self):
+        self.alunos_lista = criarAlunos()
+        self.professores_lista = criarProfessores()
+        self.UCs_lista = criarUCs()
+        self.blocos_lista = criarBlocos()
+        self.grupos_lista = criarGrupos()
+        self.salas_lista = criarSalas()
 
-    def dataSetup(self):
-        self.studentsList = creatStudents()
-        self.professorsList = creatProfessors()
-        self.coursesList = creatCourses()
-        self.blocksList = creatBlocks()
-        self.roomsList = creatRooms()
-        self.groupsList = creatGroups()
-
-    def scheduling(self):
-
-        # Correr as UC's
-        for course in self.coursesList:
-            print(course.course_name)
+    def selecaoHorario(self):
+        # Correr as UCs
+        for uc in self.UCs_lista:
+            print(uc.uc_nome)
 
             # Correr todos os Grupos
-            for group in self.groupsList:
-                if course.course_name in group.group_classes:
-                    print(f"encontrei o grupo {group.group_id} para a uc {course.course_name} ")
+            for grupo in self.grupos_lista:
+                if uc.uc_nome in grupo.grupo_UCs:
+                    print(f"encontrei o grupo {grupo.grupo_id} para a uc {uc.uc_nome} ")
 
                     # Correr todas as salas
-                    for room in self.roomsList:
-                        self.constrain1(room.room_tuc, course.course_tuc)
-                        self.constrain2(room.room_capacity, group.group_capacity)
-                        if self.constrain1_valid and self.constrain2_valid:
-                            print(f"Encontrei a sala {room.room_name} com tuc {room.room_tuc} "
-                                  f"igual ao tuc da uc {course.course_tuc} "
-                                  f" e com lotação de {room.room_capacity} "
-                                  f"superior à lotação do grupo {group.group_capacity}")
+                    for sala in self.salas_lista:
+                        self.restricao1(sala.sala_tuc, uc.uc_tuc)
+                        self.restricao2(sala.sala_lotacao, grupo.grupo_lotacao)
+                        if self.restricao1_valida and self.restricao2_valida:
+                            print(f"Encontrei a sala {sala.sala_nome} com tuc {sala.sala_tuc} "
+                                  f"igual ao tuc da uc {uc.uc_tuc} "
+                                  f" e com lotacao de {sala.sala_lotacao} "
+                                  f"superior à lotacao do grupo {grupo.grupo_lotacao}")
 
                             # Correr Todos os Professores
-                            for professor in self.professorsList:
-                                self.constrain3(professor.professor_classes, course.course_name)
-                                if self.constrain3_valid:
-                                    print(f"O professor {professor.professor_name} "
-                                          f"pode lecionar a cadeira {course.course_name}")
+                            for professor in self.professores_lista:
+                                self.restricao3(professor.professor_UCs, uc.uc_nome)
+                                if self.restricao3_valida:
+                                    print(f"O professor {professor.professor_nome} "
+                                          f"pode lecionar a cadeira {uc.uc_nome}")
 
-                                    # Correr todos os blocos horários
-                                    for block in self.blocksList:
-                                        # self.constrain4(professor.professor_atendimento, block.block_id)
-                                        if self.constrain4_valid:
-                                            print(f"Aloquei o bloco {block.block_id} que "
+                                    # Correr todos os blocos horarios
+                                    for bloco in self.blocos_lista:
+                                        self.restricao4(professor.professor_atendimento, bloco.bloco_id)
+                                        if self.restricao4_valida:
+                                            print(f"Aloquei o bloco {bloco.bloco_id} que "
                                                   f"não condiciona o atendimento no bloco "
                                                   f"{professor.professor_atendimento} do professor")
 
@@ -77,48 +74,35 @@ class Schedule:
                     break
             break
 
-    # # A tipologia da sala deve ser igual à tipologia da UC
-    # def constrain4(self, roomTuc, courseTuc):
-    #     if roomTuc == courseTuc:
-    #         self.constrain1_valid = True
-    #     else:
-    #         self.constrain1_valid = False
-
     # A tipologia da sala deve ser igual à tipologia da UC
-    def constrain1(self, roomTuc, courseTuc):
-        if roomTuc == courseTuc:
-            self.constrain1_valid = True
+    def restricao1(self, salaTuc, ucTuc):
+        if salaTuc == ucTuc:
+            self.restricao1_valida = True
         else:
-            self.constrain1_valid = False
+            self.restricao1_valida = False
 
-    # A lotação da sala deve ser igual ou superior à do grupo
-    def constrain2(self, roomCapacity, groupCapacity):
-        if roomCapacity >= groupCapacity:
-            self.constrain2_valid = True
+    # A lotacao da sala deve ser igual ou superior à do grupo
+    def restricao2(self, salaLotacao, grupoLotacao):
+        if salaLotacao >= grupoLotacao:
+            self.restricao2_valida = True
         else:
-            self.constrain2_valid = False
+            self.restricao2_valida = False
 
-    # Cada professor só pode lecionar as uc's em que está registado
-    def constrain3(self, professorClasses, courseName):
-        for n in range(0, len(professorClasses)):
-            if courseName in professorClasses[n]:
-                self.constrain3_valid = True
+    # Cada professor só pode lecionar as UCs em que esta registado
+    def restricao3(self, professorUCs, ucNome):
+        for n in range(0, len(professorUCs)):
+            if ucNome in professorUCs[n]:
+                self.restricao3_valida = True
                 break
             else:
-                self.constrain3_valid = False
+                self.restricao3_valida = False
 
     # Um Professor não pode lecionar no seu bloco de atendimento
-    def constrain4(self, professorAtendimento, blockId):
-        for n in range(0, len(blockId)):
-            if professorAtendimento in blockId[n]:
-                self.constrain4_valid = False
-            else:
-                self.constrain4_valid = True
-                break
-
-
-
-
+    def restricao4(self, professorAtendimento, blocoId):
+        if professorAtendimento == blocoId:
+            self.restricao4_valida = False
+        else:
+            self.restricao4_valida = True
 
     # Um Grupo não pode assistir a duas aulas em simultâneo
     def constrain6(self, group, block):
@@ -166,7 +150,7 @@ def main():
     # ------------------------------------------------------
     # Execution
     # ------------------------------------------------------
-    Schedule()
+    Horario()
 
 
 if __name__ == '__main__':
