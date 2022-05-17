@@ -1,12 +1,23 @@
 #!/usr/bin/python3
 import random as rnd
+import sys
 import numpy as np
+import pandas as pd
 import prettytable
+import math
+
+from matplotlib import pyplot as plt
+import time
+from mpl_toolkits.mplot3d import Axes3D
+
 
 POPULATION_SIZE = 9
 NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 3
 MUTATION_RATE = 0.1
+start_time = time.time()
+
+# sys.stdout = open("test.txt", "w")
 
 
 class Aula:
@@ -146,7 +157,8 @@ class Data:
     Salas = [['S1', 0, 40, 15], ['S2', 0, 40, 20],
              ['S3', 0, 30, 10], ['S4', 2, 35, 32],
              ['S5', 1, 35, 30], ['S6', 1, 50, 35],
-             ['S7', 2, 60, 50], ['S8', 0, 25, 10], ['S9', 0, 50, 100]]
+             ['S7', 2, 60, 50], ['S8', 0, 25, 10],
+             ['S9', 0, 50, 100]]
 
     Blocos = [['B0', 'Seg 09:00 - 11:00'],
               ['B1', 'Seg 11:00 - 13:00'],
@@ -221,6 +233,9 @@ class Data:
         unidade_curricular19 = UC("uc19", "algebra", [self._professores[14]], 0)
         unidade_curricular20 = UC("uc20", "calculo", [self._professores[15]], 0)
         unidade_curricular21 = UC("uc21", "automacao2", [self._professores[13]], 1)
+        unidade_curricular22 = UC("uc22", "automacao1", [self._professores[11], self._professores[12]], 1)
+        unidade_curricular23 = UC("uc23", "adpe", [self._professores[1], self._professores[5]], 0)
+        unidade_curricular24 = UC("uc24", "maquinastermicas",[self._professores[6]], 0)
 
         self._ucs = [unidade_curricular1, unidade_curricular2, unidade_curricular3,
                      unidade_curricular4, unidade_curricular5, unidade_curricular6,
@@ -228,20 +243,29 @@ class Data:
                      unidade_curricular10, unidade_curricular11, unidade_curricular12,
                      unidade_curricular13, unidade_curricular14, unidade_curricular15,
                      unidade_curricular16, unidade_curricular17, unidade_curricular18,
-                     unidade_curricular19, unidade_curricular20, unidade_curricular21]
+                     unidade_curricular19, unidade_curricular20, unidade_curricular21,
+                     unidade_curricular22, unidade_curricular23, unidade_curricular24]
 
         grupo1 = Grupo("g1", 25, [unidade_curricular1, unidade_curricular2,
                                   unidade_curricular3, unidade_curricular5,
-                                  unidade_curricular6, unidade_curricular21])
+                                  unidade_curricular6, unidade_curricular21,
+                                  unidade_curricular22, unidade_curricular10])
+
         grupo2 = Grupo("g2", 35, [unidade_curricular13, unidade_curricular12,
                                   unidade_curricular19, unidade_curricular9,
-                                  unidade_curricular4, unidade_curricular16])
+                                  unidade_curricular4, unidade_curricular16,
+                                  unidade_curricular23, unidade_curricular2])
+
         grupo3 = Grupo("g3", 30, [unidade_curricular18, unidade_curricular7,
                                   unidade_curricular1, unidade_curricular4,
-                                  unidade_curricular12, unidade_curricular20])
+                                  unidade_curricular12, unidade_curricular20,
+                                  unidade_curricular24, unidade_curricular17])
+
         grupo4 = Grupo("g4", 50, [unidade_curricular8, unidade_curricular10,
                                   unidade_curricular11, unidade_curricular15,
-                                  unidade_curricular17, unidade_curricular5])
+                                  unidade_curricular17, unidade_curricular5,
+                                  unidade_curricular14, unidade_curricular19])
+
         self._grupos = [grupo1, grupo2, grupo3, grupo4]
         self._numeroAulas = 0
 
@@ -269,19 +293,26 @@ class Horario:
     def __init__(self):
         self._data = data
         self._aulas = []
-        self._numOfConflicts = 0
+        self._numdeIncompatibilidades = 0
         self._fitness = -1
         self._classNumb = 0
         self._isFitnessChanged = True
+        self.distance = []
+        self.total_distance = 0
+        self.blocos = []
+        self.distg1 = 0
+        self.distg2 = 0
+        self.distg3 = 0
+        self.distg4 = 0
 
     def get_aulas(self):
         self._isFitnessChanged = True
         return self._aulas
 
-    def get_numOfConflicts(self):
-        return self._numOfConflicts
+    def get_numdeIncompatibilidades(self):
+        return self._numdeIncompatibilidades
 
-    def get_fitness(self):
+    def get_fobjetivo(self):
         if self._isFitnessChanged:
             self._fitness = self.calculate_fitness()
             self._isFitnessChanged = False
@@ -304,16 +335,19 @@ class Horario:
         return self
 
     def calculate_fitness(self):
-        self._numOfConflicts = 0
+        self._numdeIncompatibilidades = 0
+        self.distance = []
+        self.blocos = []
+        self.total_distance = 0
         aulas = self.get_aulas()
         for i in range(len(aulas)):
             if aulas[i].get_sala().get_lotacao() < aulas[i].get_grupo().get_grupo_lotacao():
-                self._numOfConflicts += 1
+                self._numdeIncompatibilidades += 1
             if aulas[i].get_sala().get_tuc() != aulas[i].get_uc().get_tuc():
-                self._numOfConflicts += 1
+                self._numdeIncompatibilidades += 1
 
             if aulas[i].get_bloco().get_id() == aulas[i].get_professor().get_atendimento():
-                self._numOfConflicts += 1
+                self._numdeIncompatibilidades += 1
 
             for j in range(len(aulas)):
                 if j >= i:
@@ -321,12 +355,85 @@ class Horario:
                             and aulas[i].get_id() != aulas[j].get_id():
 
                         if aulas[i].get_sala() == aulas[j].get_sala():
-                            self._numOfConflicts += 1
+                            self._numdeIncompatibilidades += 1
 
                         if aulas[i].get_professor() == aulas[j].get_professor():
-                            self._numOfConflicts += 1
+                            self._numdeIncompatibilidades += 1
 
-        return 1 / (1.0 * (self._numOfConflicts + 1))
+                if aulas[i].get_grupo().get_nome() == 'g1':
+                    distance = aulas[i].get_sala().get_distancia()
+                    bloco = aulas[i].get_bloco().get_id()
+                    self.blocos.append(bloco)
+                    self.distance.append(distance)
+                    zipped_lists = zip(self.blocos, self.distance)
+                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
+                    order_distance = []
+                    for b, dist in sorted_zipped_lists:
+                        order_distance.append(dist)
+                    dist_final = []
+                    for n in range(len(order_distance)):
+                        #     if n and n + 1:
+                        calc = abs(order_distance[n] - order_distance[n - 1])
+                        dist_final.append(calc)
+                    self.distg1 = sum(dist_final)
+
+                if aulas[i].get_grupo().get_nome() == 'g2':
+                    distance = aulas[i].get_sala().get_distancia()
+                    bloco = aulas[i].get_bloco().get_id()
+                    self.blocos.append(bloco)
+                    self.distance.append(distance)
+                    zipped_lists = zip(self.blocos, self.distance)
+                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
+                    order_distance = []
+                    for b, dist in sorted_zipped_lists:
+                        order_distance.append(dist)
+                    dist_final = []
+                    for n in range(len(order_distance)):
+                        calc = abs(order_distance[n] - order_distance[n - 1])
+                        dist_final.append(calc)
+                    self.distg2 = sum(dist_final)
+
+                if aulas[i].get_grupo().get_nome() == 'g3':
+                    distance = aulas[i].get_sala().get_distancia()
+                    bloco = aulas[i].get_bloco().get_id()
+                    self.blocos.append(bloco)
+                    self.distance.append(distance)
+                    zipped_lists = zip(self.blocos, self.distance)
+                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
+                    order_distance = []
+                    for b, dist in sorted_zipped_lists:
+                        order_distance.append(dist)
+                    dist_final = []
+                    for n in range(len(order_distance)):
+                        #     if n and n + 1:
+                        calc = abs(order_distance[n] - order_distance[n - 1])
+                        dist_final.append(calc)
+                    self.distg3 = sum(dist_final)
+
+                if aulas[i].get_grupo().get_nome() == 'g4':
+                    distance = aulas[i].get_sala().get_distancia()
+                    bloco = aulas[i].get_bloco().get_id()
+                    self.blocos.append(bloco)
+                    self.distance.append(distance)
+                    zipped_lists = zip(self.blocos, self.distance)
+                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
+                    order_distance = []
+                    for b, dist in sorted_zipped_lists:
+                        order_distance.append(dist)
+                    dist_final = []
+                    for n in range(len(order_distance)):
+                        #     if n and n + 1:
+                        calc = abs(order_distance[n] - order_distance[n - 1])
+                        dist_final.append(calc)
+                    self.distg4 = sum(dist_final)
+
+                lista_blocos = ['g1', 'g2', 'g3', 'g4']
+
+            self.total_distance = self.distg1 + self.distg2 + self.distg3 + self.distg4
+
+        return self.total_distance + math.exp(5 * self._numdeIncompatibilidades)
+
+        # return self.total_distance
 
     def __str__(self):
         return_value = ''
@@ -403,7 +510,7 @@ class GeneticAlgorithm:
             tournament_pop.get_horarios().append(pop.get_horarios()[rnd.randrange(0, POPULATION_SIZE)])
             i += 1
 
-        tournament_pop.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+        tournament_pop.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
 
         return tournament_pop
 
@@ -485,13 +592,14 @@ class DisplayMgr:
 
     def print_generation(self, population):
         self.is_not_used()
-        table1 = prettytable.PrettyTable(['Schedule #', 'Fitness', '# of conflicts',
-                                          'classes [dept,class,room,instructor,meeting-time]'])
+        table1 = prettytable.PrettyTable(['Horario #', 'Função Objetivo', '# de Incompatibilidades',
+                                          'Aulas [Grupo,UC,Sala,Professor,bloco]'])
         horarios = population.get_horarios()
 
         for i in range(len(horarios)):
-            table1.add_row([str(i + 1), round(horarios[i].get_fitness(), 3), horarios[i].get_numOfConflicts(),
-                            horarios[i].__str__()])
+            table1.add_row(
+                [str(i + 1), round(horarios[i].get_fobjetivo(), 3), horarios[i].get_numdeIncompatibilidades(),
+                 horarios[i].__str__()])
 
         print(table1)
 
@@ -499,7 +607,7 @@ class DisplayMgr:
         self.is_not_used()
         table1 = prettytable.PrettyTable(
             ['Aula #', 'Grupo (Lotacao)', 'UC (Nome, Tipologia)', "Sala (Lotacao, Tipologia, Distancia)",
-             "Professor (Atendimento)", "Bloco (Horario)",])
+             "Professor (Atendimento)", "Bloco (Horario)", ])
         aulas = schedule.get_aulas()
 
         for i in range(len(aulas)):
@@ -510,7 +618,7 @@ class DisplayMgr:
                 aulas[i].get_professor().get_atendimento()) + ")"
 
             sala = aulas[i].get_sala().get_nome() + " (" + str(aulas[i].get_sala().get_lotacao()) \
-                   + ", " + str(aulas[i].get_sala().get_tuc()) + ", " +  str(aulas[i].get_sala().get_distancia()) + ")"
+                   + ", " + str(aulas[i].get_sala().get_tuc()) + ", " + str(aulas[i].get_sala().get_distancia()) + ")"
 
             bloco = aulas[i].get_bloco().get_id() + " (" + aulas[i].get_bloco().get_hora() + ")"
 
@@ -521,26 +629,6 @@ class DisplayMgr:
             )
 
         print(table1)
-
-    # def print_mean(self, population):
-    #     self.is_not_used()
-    #     horarios = population.get_horarios()
-    #     fitness_scores = []
-    #
-    #     for i in range(len(horarios)):
-    #         fitness_scores.append(round(horarios[i].get_fitness(), 3))
-    #
-    #     print("> Mean= ", np.array(fitness_scores).mean())
-    #
-    # def print_std(self, population):
-    #     self.is_not_used()
-    #     horarios = population.get_horarios()
-    #     fitness_scores = []
-    #
-    #     for i in range(len(horarios)):
-    #         fitness_scores.append(round(horarios[i].get_fitness(), 3))
-    #
-    #     print("> Standard Deviation= ", np.array(fitness_scores).std())
 
     def is_not_used(self):
         pass
@@ -554,16 +642,58 @@ generation_number = 0
 print("\n> Generation #", generation_number)
 
 population = Population(POPULATION_SIZE)
-population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+# population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+population.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
 display.print_generation(population)
 geneticAlgorithm = GeneticAlgorithm()
 
-while population.get_horarios()[0].get_fitness() != 1.0:
+i = 0
+# new_dist =
+# print('okay' + str(new_dist))
+dist_gra = []
+dist_old = 0
+
+while population.get_horarios()[0].get_fobjetivo() > dist_old or \
+        population.get_horarios()[0].get_numdeIncompatibilidades() != 0:
+
+    new_dist = population.get_horarios()[0].get_fobjetivo()
+    if new_dist < dist_old:
+        new_dist = dist_old
+
     generation_number += 1
-    print("\n> Generation #", generation_number)
+    print("\n> Iteração #", generation_number)
     population = geneticAlgorithm.evolve(population)
-    population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+    # population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+    population.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
     display.print_generation(population)
     display.print_schedule_as_table(population.get_horarios()[0])
+
+    print('Resultado Função Objetivo - Distancia Total: ' + str(new_dist))
+    dist_gra.append(new_dist)
+
     # display.print_mean(population)
     # display.print_std(population)
+    i += 1
+    if i >= 10000:
+        break
+
+
+# sys.stdout.close()
+# print(new_dist)
+end_time = time.time()
+print('Elapsed time is ' + str(end_time - start_time))
+distancia = dist_gra
+iteracao = list(range(0, generation_number))
+
+df = pd.DataFrame({
+    'x_axis': iteracao,
+    'y_axis': distancia})
+plt.autoscale(enable=True, axis='both', tight=None)
+plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o')
+plt.yscale('log')
+plt.xscale('log')
+plt.title('Minimização distâncias percorridas em horários')
+plt.xlabel('No de Iterações')
+plt.ylabel('Função Objetivo (m)')
+plt.show()
+
