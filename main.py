@@ -10,12 +10,12 @@ from matplotlib import pyplot as plt
 import time
 from mpl_toolkits.mplot3d import Axes3D
 
-
-POPULATION_SIZE = 9
+POPULATION_SIZE = 50
 NUMB_OF_ELITE_SCHEDULES = 1
-TOURNAMENT_SELECTION_SIZE = 3
+TOURNAMENT_SELECTION_SIZE = 10
 MUTATION_RATE = 0.1
 start_time = time.time()
+
 
 # sys.stdout = open("test.txt", "w")
 
@@ -235,7 +235,7 @@ class Data:
         unidade_curricular21 = UC("uc21", "automacao2", [self._professores[13]], 1)
         unidade_curricular22 = UC("uc22", "automacao1", [self._professores[11], self._professores[12]], 1)
         unidade_curricular23 = UC("uc23", "adpe", [self._professores[1], self._professores[5]], 0)
-        unidade_curricular24 = UC("uc24", "maquinastermicas",[self._professores[6]], 0)
+        unidade_curricular24 = UC("uc24", "maquinastermicas", [self._professores[6]], 0)
 
         self._ucs = [unidade_curricular1, unidade_curricular2, unidade_curricular3,
                      unidade_curricular4, unidade_curricular5, unidade_curricular6,
@@ -297,13 +297,13 @@ class Horario:
         self._fitness = -1
         self._classNumb = 0
         self._isFitnessChanged = True
-        self.distance = []
         self.total_distance = 0
+        self.distance = []
         self.blocos = []
+        self.distg4 = 0
         self.distg1 = 0
         self.distg2 = 0
         self.distg3 = 0
-        self.distg4 = 0
 
     def get_aulas(self):
         self._isFitnessChanged = True
@@ -335,9 +335,14 @@ class Horario:
         return self
 
     def calculate_fitness(self):
-        self._numdeIncompatibilidades = 0
         self.distance = []
         self.blocos = []
+        self.distg0 = 0
+        self.distg1 = 0
+        self.distg2 = 0
+        self.distg3 = 0
+
+        self._numdeIncompatibilidades = 0
         self.total_distance = 0
         aulas = self.get_aulas()
         for i in range(len(aulas)):
@@ -360,6 +365,44 @@ class Horario:
                         if aulas[i].get_professor() == aulas[j].get_professor():
                             self._numdeIncompatibilidades += 1
 
+                # lista_de_blocos = ['g1', 'g2', 'g3', 'g4']
+
+                # for m in range(4):
+                #     if aulas[i].get_grupo().get_nome() == lista_de_blocos[m]:
+                #         globals()['distance%s' % m] = aulas[i].get_sala().get_distancia()
+                #         globals()['bloco%s' % m] = aulas[i].get_bloco().get_id()
+                #
+                #         globals()['self.blocos%s' % m].append(globals()['bloco%s' % m])
+                #         globals()['self.distance%s' % m].append(globals()['distance%s' % m])
+                #
+                #         globals()['zipped_lists%s' % m] = zip(globals()['bloco%s' % m], globals()['distance%s' % m])
+                #         globals()['sorted_zipped_lists%s' % m] = sorted(globals()['zipped_lists%s' % m], reverse=False)
+                #         globals()['order_distance%s' % m] = []
+                #         for b, dist in (globals()['sorted_zipped_lists%s' % m]):
+                #             globals()['order_distance%s' % m].append(dist)
+                #         globals()['dist_final%s' % m] = []
+                #         for n in range(len(globals()['order_distance%s' % m])):
+                #             #     if n and n + 1:
+                #             globals()['calc%s' % m] = abs(globals()['order_distance%s' % m][n] - globals()['order_distance%s' % m][n - 1])
+                #             globals()['dist_final%s' % m].append(globals()['calc%s' % m])
+                #         globals()['self.distg%s' % m] = sum(globals()['dist_final%s' % m])
+
+                # if aulas[i].get_grupo().get_nome() == 'g2':
+                #     distance = aulas[i].get_sala().get_distancia()
+                #     bloco = aulas[i].get_bloco().get_id()
+                #     self.blocos2.append(bloco)
+                #     self.distance2.append(distance)
+                #     zipped_lists = zip(self.blocos2, self.distance2)
+                #     sorted_zipped_lists = sorted(zipped_lists, reverse=False)
+                #     order_distance = []
+                #     for b, dist in sorted_zipped_lists:
+                #         order_distance.append(dist)
+                #     dist_final = []
+                #     for n in range(len(order_distance)):
+                #         calc = abs(order_distance[n] - order_distance[n - 1])
+                #         dist_final.append(calc)
+                #     self.distg2 = sum(dist_final)
+                #
                 if aulas[i].get_grupo().get_nome() == 'g1':
                     distance = aulas[i].get_sala().get_distancia()
                     bloco = aulas[i].get_bloco().get_id()
@@ -389,6 +432,7 @@ class Horario:
                         order_distance.append(dist)
                     dist_final = []
                     for n in range(len(order_distance)):
+                        #     if n and n + 1:
                         calc = abs(order_distance[n] - order_distance[n - 1])
                         dist_final.append(calc)
                     self.distg2 = sum(dist_final)
@@ -427,11 +471,12 @@ class Horario:
                         dist_final.append(calc)
                     self.distg4 = sum(dist_final)
 
-                lista_blocos = ['g1', 'g2', 'g3', 'g4']
+                # lista_blocos = ['g1', 'g2', 'g3', 'g4']
 
-            self.total_distance = self.distg1 + self.distg2 + self.distg3 + self.distg4
+            self.total_distance = self.distg4 + self.distg1 + self.distg2 + self.distg3
+            # self.total_distance =self.distg2
 
-        return self.total_distance + math.exp(5 * self._numdeIncompatibilidades)
+        return self.total_distance + math.exp(7 * self._numdeIncompatibilidades)
 
         # return self.total_distance
 
@@ -652,11 +697,21 @@ i = 0
 # print('okay' + str(new_dist))
 dist_gra = []
 dist_old = 0
-
+dist_max = []
+dist_mean = []
+dists = []
 while population.get_horarios()[0].get_fobjetivo() > dist_old or \
         population.get_horarios()[0].get_numdeIncompatibilidades() != 0:
 
     new_dist = population.get_horarios()[0].get_fobjetivo()
+    max_dist = population.get_horarios()[-1].get_fobjetivo()
+    dists = []
+    for y in range(49):
+        distancia = population.get_horarios()[y].get_fobjetivo()
+        dists.append(distancia)
+
+    dist_mean.append(sum(dists)/len(dists))
+
     if new_dist < dist_old:
         new_dist = dist_old
 
@@ -670,30 +725,48 @@ while population.get_horarios()[0].get_fobjetivo() > dist_old or \
 
     print('Resultado Função Objetivo - Distancia Total: ' + str(new_dist))
     dist_gra.append(new_dist)
+    dist_max.append(max_dist)
 
     # display.print_mean(population)
     # display.print_std(population)
     i += 1
-    if i >= 10000:
+    if i >= 10:
         break
-
 
 # sys.stdout.close()
 # print(new_dist)
+
+    distancia_min = dist_gra
+    iteracao = list(range(0, generation_number))
+    distancia_max = dist_max
+    distancia_mean = dist_mean
+
+    df = pd.DataFrame({
+        'x_axis': iteracao,
+        'y_axis': distancia_min})
+
+    df_max = pd.DataFrame({
+        'x_axis': iteracao,
+        'y_axis': distancia_max})
+
+    df_mean = pd.DataFrame({
+        'x_axis': iteracao,
+        'y_axis': distancia_mean})
+
+    plt.autoscale(enable=True, axis='both', tight=None)
+    plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o', color='r', label='Min dist')
+    plt.plot('x_axis', 'y_axis', data=df_max, linestyle='-', marker='o', color='g', label='Max dist')
+    plt.plot('x_axis', 'y_axis', data=df_mean, linestyle='-', marker='o', color='b', label='Mean dist')
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.title('Minimização distâncias percorridas em horários')
+    plt.xlabel('No de Iterações')
+    plt.ylabel('Função Objetivo (m)')
+
+    plt.pause(0.05)
+
 end_time = time.time()
-print('Elapsed time is ' + str(end_time - start_time))
-distancia = dist_gra
-iteracao = list(range(0, generation_number))
-
-df = pd.DataFrame({
-    'x_axis': iteracao,
-    'y_axis': distancia})
-plt.autoscale(enable=True, axis='both', tight=None)
-plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o')
-plt.yscale('log')
-plt.xscale('log')
-plt.title('Minimização distâncias percorridas em horários')
-plt.xlabel('No de Iterações')
-plt.ylabel('Função Objetivo (m)')
+tempo = (end_time - start_time)/60
+print('Elapsed time is ' + str(tempo) + ' minutes')
+# plt.legend()
 plt.show()
-
