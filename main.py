@@ -13,9 +13,8 @@ from mpl_toolkits.mplot3d import Axes3D
 POPULATION_SIZE = 50
 NUMB_OF_ELITE_SCHEDULES = 1
 TOURNAMENT_SELECTION_SIZE = 10
-MUTATION_RATE = 0.1
+MUTATION_RATE = 0.2
 start_time = time.time()
-
 
 # sys.stdout = open("test.txt", "w")
 
@@ -160,43 +159,43 @@ class Data:
              ['S7', 2, 60, 50], ['S8', 0, 25, 10],
              ['S9', 0, 50, 100]]
 
-    Blocos = [['B0', 'Seg 09:00 - 11:00'],
-              ['B1', 'Seg 11:00 - 13:00'],
-              ['B2', 'Seg 14:00 - 16:00'],
-              ['B3', 'Seg 16:00 - 18:00'],
-              ['B4', 'Ter 09:00 - 11:00'],
-              ['B5', 'Ter 11:00 - 13:00'],
-              ['B6', 'Ter 14:00 - 16:00'],
-              ['B7', 'Ter 16:00 - 18:00'],
-              ['B8', 'Qua 09:00 - 11:00'],
-              ['B9', 'Qua 11:00 - 13:00'],
-              ['B10', 'Qua 14:00 - 16:00'],
-              ['B11', 'Qua 16:00 - 18:00'],
-              ['B12', 'Qui 09:00 - 11:00'],
-              ['B13', 'Qui 11:00 - 13:00'],
-              ['B14', 'Qui 14:00 - 16:00'],
-              ['B15', 'Qui 16:00 - 18:00'],
-              ['B16', 'Sex 09:00 - 11:00'],
-              ['B17', 'Sex 11:00 - 13:00'],
-              ['B18', 'Sex 14:00 - 16:00'],
-              ['B19', 'Sex 16:00 - 18:00']]
+    Blocos = [['B000', 'Seg 09:00 - 11:00'],
+              ['B001', 'Seg 11:00 - 13:00'],
+              ['B002', 'Seg 14:00 - 16:00'],
+              ['B003', 'Seg 16:00 - 18:00'],
+              ['B004', 'Ter 09:00 - 11:00'],
+              ['B005', 'Ter 11:00 - 13:00'],
+              ['B006', 'Ter 14:00 - 16:00'],
+              ['B007', 'Ter 16:00 - 18:00'],
+              ['B008', 'Qua 09:00 - 11:00'],
+              ['B009', 'Qua 11:00 - 13:00'],
+              ['B010', 'Qua 14:00 - 16:00'],
+              ['B011', 'Qua 16:00 - 18:00'],
+              ['B012', 'Qui 09:00 - 11:00'],
+              ['B013', 'Qui 11:00 - 13:00'],
+              ['B014', 'Qui 14:00 - 16:00'],
+              ['B015', 'Qui 16:00 - 18:00'],
+              ['B016', 'Sex 09:00 - 11:00'],
+              ['B017', 'Sex 11:00 - 13:00'],
+              ['B018', 'Sex 14:00 - 16:00'],
+              ['B019', 'Sex 16:00 - 18:00']]
 
-    Professores = [['bastos', 2],
-                   ['rui', 5],
-                   ['balaco', 12],
-                   ['robert', 7],
-                   ['ricardo', 13],
-                   ['gil', 10],
-                   ['jalex', 9],
-                   ['ramos', 19],
-                   ['rosario', 14],
-                   ['festas', 3],
-                   ['vitor', 6],
-                   ['riem', 9],
-                   ['jps', 8],
-                   ['cruz', 20],
-                   ['semnome', 17],
-                   ['descalco', 4]]
+    Professores = [['bastos', 'B002'],
+                   ['rui', 'B005'],
+                   ['balaco', 'B012'],
+                   ['robert', 'B007'],
+                   ['ricardo', 'B013'],
+                   ['gil', 'B010'],
+                   ['jalex', 'B009'],
+                   ['ramos', 'B019'],
+                   ['rosario', 'B014'],
+                   ['festas', 'B003'],
+                   ['vitor', 'B006'],
+                   ['riem', 'B009'],
+                   ['jps', 'B008'],
+                   ['cruz', 'B020'],
+                   ['semnome', 'B017'],
+                   ['descalco', 'B004']]
 
     def __init__(self):
         self._salas = []
@@ -232,8 +231,8 @@ class Data:
         unidade_curricular18 = UC("uc18", "psr", [self._professores[11]], 0)
         unidade_curricular19 = UC("uc19", "algebra", [self._professores[14]], 0)
         unidade_curricular20 = UC("uc20", "calculo", [self._professores[15]], 0)
-        unidade_curricular21 = UC("uc21", "automacao2", [self._professores[13]], 1)
-        unidade_curricular22 = UC("uc22", "automacao1", [self._professores[11], self._professores[12]], 1)
+        unidade_curricular21 = UC("uc21", "automacao2", [self._professores[12]], 1)
+        unidade_curricular22 = UC("uc22", "edp", [self._professores[6]], 0)
         unidade_curricular23 = UC("uc23", "adpe", [self._professores[1], self._professores[5]], 0)
         unidade_curricular24 = UC("uc24", "maquinastermicas", [self._professores[6]], 0)
 
@@ -304,6 +303,15 @@ class Horario:
         self.distg1 = 0
         self.distg2 = 0
         self.distg3 = 0
+        self.distg0 = 0
+        self.distance0 = []
+        self.distance1 = []
+        self.distance2 = []
+        self.distance3 = []
+        self.blocos0 = []
+        self.blocos1 = []
+        self.blocos2 = []
+        self.blocos3 = []
 
     def get_aulas(self):
         self._isFitnessChanged = True
@@ -342,6 +350,15 @@ class Horario:
         self.distg2 = 0
         self.distg3 = 0
 
+        self.distance0 = []
+        self.distance1 = []
+        self.distance2 = []
+        self.distance3 = []
+        self.blocos0 = []
+        self.blocos1 = []
+        self.blocos2 = []
+        self.blocos3 = []
+
         self._numdeIncompatibilidades = 0
         self.total_distance = 0
         aulas = self.get_aulas()
@@ -365,118 +382,202 @@ class Horario:
                         if aulas[i].get_professor() == aulas[j].get_professor():
                             self._numdeIncompatibilidades += 1
 
-                # lista_de_blocos = ['g1', 'g2', 'g3', 'g4']
+                        if aulas[i].get_grupo() == aulas[j].get_grupo():
+                            self._numdeIncompatibilidades += 1
 
-                # for m in range(4):
-                #     if aulas[i].get_grupo().get_nome() == lista_de_blocos[m]:
-                #         globals()['distance%s' % m] = aulas[i].get_sala().get_distancia()
-                #         globals()['bloco%s' % m] = aulas[i].get_bloco().get_id()
-                #
-                #         globals()['self.blocos%s' % m].append(globals()['bloco%s' % m])
-                #         globals()['self.distance%s' % m].append(globals()['distance%s' % m])
-                #
-                #         globals()['zipped_lists%s' % m] = zip(globals()['bloco%s' % m], globals()['distance%s' % m])
-                #         globals()['sorted_zipped_lists%s' % m] = sorted(globals()['zipped_lists%s' % m], reverse=False)
-                #         globals()['order_distance%s' % m] = []
-                #         for b, dist in (globals()['sorted_zipped_lists%s' % m]):
-                #             globals()['order_distance%s' % m].append(dist)
-                #         globals()['dist_final%s' % m] = []
-                #         for n in range(len(globals()['order_distance%s' % m])):
-                #             #     if n and n + 1:
-                #             globals()['calc%s' % m] = abs(globals()['order_distance%s' % m][n] - globals()['order_distance%s' % m][n - 1])
-                #             globals()['dist_final%s' % m].append(globals()['calc%s' % m])
-                #         globals()['self.distg%s' % m] = sum(globals()['dist_final%s' % m])
+        for k in range(len(aulas)):
+            if aulas[k].get_grupo().get_nome() == 'g1':
+                distance0 = aulas[k].get_sala().get_distancia()
+                bloco0 = aulas[k].get_bloco().get_id()
+                self.blocos0.append(bloco0)
+                self.distance0.append(distance0)
+                if len(self.distance0) == 8:
+                    zipped_lists0 = zip(self.blocos0, self.distance0)
+                    sorted_zipped_lists0 = sorted(zipped_lists0, reverse=True)
+                    dist_final0 = []
 
-                # if aulas[i].get_grupo().get_nome() == 'g2':
-                #     distance = aulas[i].get_sala().get_distancia()
-                #     bloco = aulas[i].get_bloco().get_id()
-                #     self.blocos2.append(bloco)
-                #     self.distance2.append(distance)
-                #     zipped_lists = zip(self.blocos2, self.distance2)
-                #     sorted_zipped_lists = sorted(zipped_lists, reverse=False)
-                #     order_distance = []
-                #     for b, dist in sorted_zipped_lists:
-                #         order_distance.append(dist)
-                #     dist_final = []
-                #     for n in range(len(order_distance)):
-                #         calc = abs(order_distance[n] - order_distance[n - 1])
-                #         dist_final.append(calc)
-                #     self.distg2 = sum(dist_final)
-                #
-                if aulas[i].get_grupo().get_nome() == 'g1':
-                    distance = aulas[i].get_sala().get_distancia()
-                    bloco = aulas[i].get_bloco().get_id()
-                    self.blocos.append(bloco)
-                    self.distance.append(distance)
-                    zipped_lists = zip(self.blocos, self.distance)
-                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
-                    order_distance = []
-                    for b, dist in sorted_zipped_lists:
-                        order_distance.append(dist)
-                    dist_final = []
-                    for n in range(len(order_distance)):
-                        #     if n and n + 1:
-                        calc = abs(order_distance[n] - order_distance[n - 1])
-                        dist_final.append(calc)
-                    self.distg1 = sum(dist_final)
+            if aulas[k].get_grupo().get_nome() == 'g2':
+                distance1 = aulas[k].get_sala().get_distancia()
+                bloco1 = aulas[k].get_bloco().get_id()
+                self.blocos1.append(bloco1)
+                self.distance1.append(distance1)
+                if len(self.distance1) == 8:
+                    zipped_lists1 = zip(self.blocos1, self.distance1)
+                    sorted_zipped_lists1 = sorted(zipped_lists1, reverse=True)
+                    dist_final1 = []
 
-                if aulas[i].get_grupo().get_nome() == 'g2':
-                    distance = aulas[i].get_sala().get_distancia()
-                    bloco = aulas[i].get_bloco().get_id()
-                    self.blocos.append(bloco)
-                    self.distance.append(distance)
-                    zipped_lists = zip(self.blocos, self.distance)
-                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
-                    order_distance = []
-                    for b, dist in sorted_zipped_lists:
-                        order_distance.append(dist)
-                    dist_final = []
-                    for n in range(len(order_distance)):
-                        #     if n and n + 1:
-                        calc = abs(order_distance[n] - order_distance[n - 1])
-                        dist_final.append(calc)
-                    self.distg2 = sum(dist_final)
+            if aulas[k].get_grupo().get_nome() == 'g3':
+                distance2 = aulas[k].get_sala().get_distancia()
+                bloco2 = aulas[k].get_bloco().get_id()
+                self.blocos2.append(bloco2)
+                self.distance2.append(distance2)
+                if len(self.distance2) == 8:
+                    zipped_lists2 = zip(self.blocos2, self.distance2)
+                    sorted_zipped_lists2 = sorted(zipped_lists2, reverse=True)
+                    dist_final2 = []
 
-                if aulas[i].get_grupo().get_nome() == 'g3':
-                    distance = aulas[i].get_sala().get_distancia()
-                    bloco = aulas[i].get_bloco().get_id()
-                    self.blocos.append(bloco)
-                    self.distance.append(distance)
-                    zipped_lists = zip(self.blocos, self.distance)
-                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
-                    order_distance = []
-                    for b, dist in sorted_zipped_lists:
-                        order_distance.append(dist)
-                    dist_final = []
-                    for n in range(len(order_distance)):
-                        #     if n and n + 1:
-                        calc = abs(order_distance[n] - order_distance[n - 1])
-                        dist_final.append(calc)
-                    self.distg3 = sum(dist_final)
+            if aulas[k].get_grupo().get_nome() == 'g4':
+                distance3 = aulas[k].get_sala().get_distancia()
+                bloco3 = aulas[k].get_bloco().get_id()
+                self.blocos3.append(bloco3)
+                self.distance3.append(distance3)
+                if len(self.distance3) == 8:
+                    zipped_lists3 = zip(self.blocos3, self.distance3)
+                    sorted_zipped_lists3 = sorted(zipped_lists3, reverse=True)
+                    dist_final3 = []
 
-                if aulas[i].get_grupo().get_nome() == 'g4':
-                    distance = aulas[i].get_sala().get_distancia()
-                    bloco = aulas[i].get_bloco().get_id()
-                    self.blocos.append(bloco)
-                    self.distance.append(distance)
-                    zipped_lists = zip(self.blocos, self.distance)
-                    sorted_zipped_lists = sorted(zipped_lists, reverse=False)
-                    order_distance = []
-                    for b, dist in sorted_zipped_lists:
-                        order_distance.append(dist)
-                    dist_final = []
-                    for n in range(len(order_distance)):
-                        #     if n and n + 1:
-                        calc = abs(order_distance[n] - order_distance[n - 1])
-                        dist_final.append(calc)
-                    self.distg4 = sum(dist_final)
+            if len(self.distance0) == 8 and len(self.distance1) == 8 and len(self.distance2) == 8 and len(
+                    self.distance3) == 8:
+                # print('hello')
+                # print(sorted_zipped_lists0)
+                for e in range(8):
+                    if e > 0:
+                        calc0 = abs(sorted_zipped_lists0[e][1] - sorted_zipped_lists0[e - 1][1])
+                        # print(calc0)
+                        dist_final0.append(calc0)
 
-                # lista_blocos = ['g1', 'g2', 'g3', 'g4']
+                        calc1 = abs(sorted_zipped_lists1[e][1] - sorted_zipped_lists1[e - 1][1])
+                        # print(calc0)
+                        dist_final1.append(calc1)
+
+                        calc2 = abs(sorted_zipped_lists2[e][1] - sorted_zipped_lists2[e - 1][1])
+                        # print(calc0)
+                        dist_final2.append(calc2)
+
+                        calc3 = abs(sorted_zipped_lists3[e][1] - sorted_zipped_lists3[e - 1][1])
+                        # print(calc0)
+                        dist_final3.append(calc3)
+                self.distg1 = sum(dist_final0)
+                self.distg2 = sum(dist_final1)
+                self.distg3 = sum(dist_final2)
+                self.distg4 = sum(dist_final3)
+
+            # else:
+            #     continue
+
+            # print(self.blocos0)
+
+            # elif aulas[i].get_grupo().get_nome() == 'g2':
+            #     distance1 = aulas[i].get_sala().get_distancia()
+            #     bloco1 = aulas[i].get_bloco().get_id()
+            #     self.blocos1.append(bloco1)
+            #     self.distance1.append(distance1)
+            # elif aulas[i].get_grupo().get_nome() == 'g3':
+            #     distance2 = aulas[i].get_sala().get_distancia()
+            #     bloco2 = aulas[i].get_bloco().get_id()
+            #     self.blocos2.append(bloco2)
+            #     self.distance2.append(distance2)
+            # elif aulas[i].get_grupo().get_nome() == 'g4':
+            #     distance3 = aulas[i].get_sala().get_distancia()
+            #     bloco3 = aulas[i].get_bloco().get_id()
+            #     self.blocos3.append(bloco3)
+            #     self.distance3.append(distance3)
+
+            # zipped_lists0 = zip(self.blocos0, self.distance0)
+            # # zipped_lists1 = zip(self.blocos1, self.distance1)
+            # # zipped_lists2 = zip(self.blocos2, self.distance2)
+            # # zipped_lists3 = zip(self.blocos3, self.distance3)
+            #
+            # sorted_zipped_lists0 = sorted(zipped_lists0, reverse=True)
+            # # sorted_zipped_lists1 = sorted(zipped_lists1, reverse=True)
+            # # sorted_zipped_lists2 = sorted(zipped_lists2, reverse=True)
+            # # sorted_zipped_lists3 = sorted(zipped_lists3, reverse=True)
+            # # print(sorted_zipped_lists3)
+            # # print(sorted_zipped_lists2)
+            # # print(sorted_zipped_lists0)
+            # # print(sorted_zipped_lists1)
+            # size = len(sorted_zipped_lists0)
+            #     # print(size)
+            # # # print(size)
+            # dist_final0 = []
+            # # dist_final1 = []
+            # # dist_final2 = []
+            # # dist_final3 = []
+            # #         print(sorted_zipped_lists0)
+            # print(size)
+            # for e in range(6):
+            #     if e > 0:
+            #         calc0 = abs(sorted_zipped_lists0[e][1] - sorted_zipped_lists0[e - 1][1])
+            #         print(calc0)
+            # # calc1 = abs(sorted_zipped_lists1[e][1] - sorted_zipped_lists1[e - 1][1])
+            # # calc2 = abs(sorted_zipped_lists2[e][1] - sorted_zipped_lists2[e - 1][1])
+            # # calc3 = abs(sorted_zipped_lists3[e][1] - sorted_zipped_lists3[e - 1][1])
+            #         dist_final0.append(calc0)
+            # # dist_final1.append(calc1)
+            # # dist_final2.append(calc2)
+            # # dist_final3.append(calc3)
+            #         self.distg1 = sum(dist_final0)
+            # # self.distg2 = sum(dist_final1)
+            # self.distg3 = sum(dist_final2)
+            # self.distg4 = sum(dist_final3)
+
+            # if aulas[i].get_grupo().get_nome() == 'g1':
+            #     distance = aulas[i].get_sala().get_distancia()
+            #     bloco = aulas[i].get_bloco().get_id()
+            #     globals()[f"self.blocos{m}"].append(bloco)
+            #     self.distance.append(distance)
+            #     zipped_lists = zip(self.blocos, self.distance)
+            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
+            #     tamanho = len(sorted_zipped_lists)
+            #     dist_final = []
+            #     for e in range(tamanho):
+            #         if e > 0:
+            #             # print(sorted_zipped_lists[e][1])
+            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
+            #             dist_final.append(calc)
+            #     self.distg1 = sum(dist_final)
+
+            # if aulas[i].get_grupo().get_nome() == 'g2':
+            #     distance = aulas[i].get_sala().get_distancia()
+            #     bloco = aulas[i].get_bloco().get_id()
+            #     self.blocos.append(bloco)
+            #     self.distance.append(distance)
+            #     zipped_lists = zip(self.blocos, self.distance)
+            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
+            #     tamanho = len(sorted_zipped_lists)
+            #     dist_final = []
+            #     for e in range(tamanho):
+            #         if e > 0:
+            #             # print(sorted_zipped_lists[e][1])
+            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
+            #             dist_final.append(calc)
+            #     self.distg2 = sum(dist_final)
+            #
+            # if aulas[i].get_grupo().get_nome() == 'g3':
+            #     distance = aulas[i].get_sala().get_distancia()
+            #     bloco = aulas[i].get_bloco().get_id()
+            #     self.blocos.append(bloco)
+            #     self.distance.append(distance)
+            #     zipped_lists = zip(self.blocos, self.distance)
+            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
+            #     tamanho = len(sorted_zipped_lists)
+            #     dist_final = []
+            #     for e in range(tamanho):
+            #         if e > 0:
+            #             # print(sorted_zipped_lists[e][1])
+            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
+            #             dist_final.append(calc)
+            #     self.distg3 = sum(dist_final)
+            #
+            # if aulas[i].get_grupo().get_nome() == 'g4':
+            #     distance = aulas[i].get_sala().get_distancia()
+            #     bloco = aulas[i].get_bloco().get_id()
+            #     self.blocos.append(bloco)
+            #     self.distance.append(distance)
+            #     zipped_lists = zip(self.blocos, self.distance)
+            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
+            #     tamanho = len(sorted_zipped_lists)
+            #     dist_final = []
+            #     for e in range(tamanho):
+            #         if e > 0:
+            #             # print(sorted_zipped_lists[e][1])
+            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
+            #             dist_final.append(calc)
+            #     self.distg4 = sum(dist_final)
 
             self.total_distance = self.distg4 + self.distg1 + self.distg2 + self.distg3
-            # self.total_distance =self.distg2
 
-        return self.total_distance + math.exp(7 * self._numdeIncompatibilidades)
+        return self.total_distance + abs(1 - math.exp(7 * self._numdeIncompatibilidades))
 
         # return self.total_distance
 
@@ -641,10 +742,10 @@ class DisplayMgr:
                                           'Aulas [Grupo,UC,Sala,Professor,bloco]'])
         horarios = population.get_horarios()
 
-        for i in range(len(horarios)):
-            table1.add_row(
-                [str(i + 1), round(horarios[i].get_fobjetivo(), 3), horarios[i].get_numdeIncompatibilidades(),
-                 horarios[i].__str__()])
+        # for i in range(len(horarios)):
+        table1.add_row(
+            [str(0 + 1), round(horarios[0].get_fobjetivo(), 3), horarios[0].get_numdeIncompatibilidades(),
+             horarios[0].__str__()])
 
         print(table1)
 
@@ -706,11 +807,11 @@ while population.get_horarios()[0].get_fobjetivo() > dist_old or \
     new_dist = population.get_horarios()[0].get_fobjetivo()
     max_dist = population.get_horarios()[-1].get_fobjetivo()
     dists = []
-    for y in range(49):
+    for y in range(POPULATION_SIZE - 1):
         distancia = population.get_horarios()[y].get_fobjetivo()
         dists.append(distancia)
 
-    dist_mean.append(sum(dists)/len(dists))
+    dist_mean.append(sum(dists) / len(dists))
 
     if new_dist < dist_old:
         new_dist = dist_old
@@ -730,11 +831,10 @@ while population.get_horarios()[0].get_fobjetivo() > dist_old or \
     # display.print_mean(population)
     # display.print_std(population)
     i += 1
-    if i >= 10:
+    if i >= 20000:
         break
 
-# sys.stdout.close()
-# print(new_dist)
+    # print(new_dist)
 
     distancia_min = dist_gra
     iteracao = list(range(0, generation_number))
@@ -755,18 +855,21 @@ while population.get_horarios()[0].get_fobjetivo() > dist_old or \
 
     plt.autoscale(enable=True, axis='both', tight=None)
     plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o', color='r', label='Min dist')
-    plt.plot('x_axis', 'y_axis', data=df_max, linestyle='-', marker='o', color='g', label='Max dist')
+    # plt.plot('x_axis', 'y_axis', data=df_max, linestyle='-', marker='o', color='g', label='Max dist')
     plt.plot('x_axis', 'y_axis', data=df_mean, linestyle='-', marker='o', color='b', label='Mean dist')
     plt.yscale('log')
-    plt.xscale('log')
+    # plt.xscale('log')
     plt.title('Minimização distâncias percorridas em horários')
     plt.xlabel('No de Iterações')
     plt.ylabel('Função Objetivo (m)')
 
-    plt.pause(0.05)
 
+    plt.pause(0.5)
+    # plt.legend()
+    # sys.stdout.close()
 end_time = time.time()
-tempo = (end_time - start_time)/60
+tempo = (end_time - start_time) / 60
 print('Elapsed time is ' + str(tempo) + ' minutes')
-# plt.legend()
+print(distancia_min)
+print(iteracao)
 plt.show()
