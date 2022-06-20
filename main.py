@@ -10,13 +10,19 @@ from matplotlib import pyplot as plt
 import time
 from mpl_toolkits.mplot3d import Axes3D
 
-POPULATION_SIZE = 50
+# POPULATION_SIZE = 60
 NUMB_OF_ELITE_SCHEDULES = 1
-TOURNAMENT_SELECTION_SIZE = 10
-MUTATION_RATE = 0.2
+# TOURNAMENT_SELECTION_SIZE = 20
+# MUTATION_RATE = 0.1
 start_time = time.time()
+avalicoes = 0
+restart = False
+pop_restart = None
+count_in = 0
 
-# sys.stdout = open("test.txt", "w")
+
+# just a test
+# sys.stdout = open("new.txt", "w")
 
 
 class Aula:
@@ -180,22 +186,22 @@ class Data:
               ['B018', 'Sex 14:00 - 16:00'],
               ['B019', 'Sex 16:00 - 18:00']]
 
-    Professores = [['bastos', 'B002'],
-                   ['rui', 'B005'],
-                   ['balaco', 'B012'],
-                   ['robert', 'B007'],
-                   ['ricardo', 'B013'],
-                   ['gil', 'B010'],
-                   ['jalex', 'B009'],
-                   ['ramos', 'B019'],
-                   ['rosario', 'B014'],
-                   ['festas', 'B003'],
-                   ['vitor', 'B006'],
-                   ['riem', 'B009'],
-                   ['jps', 'B008'],
-                   ['cruz', 'B020'],
-                   ['semnome', 'B017'],
-                   ['descalco', 'B004']]
+    Professores = [['Prof.António_Bastos', 'B002'],
+                   ['Prof.Rui_Moreira', 'B005'],
+                   ['Prof.Alfredo_Balacó ', 'B012'],
+                   ['Prof.Robertt_Valente', 'B007'],
+                   ['Prof.Ricardo_Sousa', 'B013'],
+                   ['Prof.Gil_Campos', 'B010'],
+                   ['Prof.João_Oliveira', 'B009'],
+                   ['Prof.António_Ramos', 'B019'],
+                   ['Prof.Rosário_Correia', 'B014'],
+                   ['Prof.António_Festas', 'B003'],
+                   ['Prof.Vitor_Neto', 'B006'],
+                   ['Prof.Miguel_Riem', 'B009'],
+                   ['Prof.Jose_Santos', 'B008'],
+                   ['Prof.Alexandre_Cruz', 'B020'],
+                   ['Prof.Raquel_Pinto', 'B017'],
+                   ['Prof.Luis_Descalço', 'B004']]
 
     def __init__(self):
         self._salas = []
@@ -312,6 +318,7 @@ class Horario:
         self.blocos1 = []
         self.blocos2 = []
         self.blocos3 = []
+        self.no_avaliacoes = 0
 
     def get_aulas(self):
         self._isFitnessChanged = True
@@ -321,8 +328,10 @@ class Horario:
         return self._numdeIncompatibilidades
 
     def get_fobjetivo(self):
+        global avalicoes
         if self._isFitnessChanged:
             self._fitness = self.calculate_fitness()
+            avalicoes += 1
             self._isFitnessChanged = False
 
         return self._fitness
@@ -343,6 +352,7 @@ class Horario:
         return self
 
     def calculate_fitness(self):
+        global avalicoes
         self.distance = []
         self.blocos = []
         self.distg0 = 0
@@ -452,131 +462,7 @@ class Horario:
                 self.distg3 = sum(dist_final2)
                 self.distg4 = sum(dist_final3)
 
-            # else:
-            #     continue
-
-            # print(self.blocos0)
-
-            # elif aulas[i].get_grupo().get_nome() == 'g2':
-            #     distance1 = aulas[i].get_sala().get_distancia()
-            #     bloco1 = aulas[i].get_bloco().get_id()
-            #     self.blocos1.append(bloco1)
-            #     self.distance1.append(distance1)
-            # elif aulas[i].get_grupo().get_nome() == 'g3':
-            #     distance2 = aulas[i].get_sala().get_distancia()
-            #     bloco2 = aulas[i].get_bloco().get_id()
-            #     self.blocos2.append(bloco2)
-            #     self.distance2.append(distance2)
-            # elif aulas[i].get_grupo().get_nome() == 'g4':
-            #     distance3 = aulas[i].get_sala().get_distancia()
-            #     bloco3 = aulas[i].get_bloco().get_id()
-            #     self.blocos3.append(bloco3)
-            #     self.distance3.append(distance3)
-
-            # zipped_lists0 = zip(self.blocos0, self.distance0)
-            # # zipped_lists1 = zip(self.blocos1, self.distance1)
-            # # zipped_lists2 = zip(self.blocos2, self.distance2)
-            # # zipped_lists3 = zip(self.blocos3, self.distance3)
-            #
-            # sorted_zipped_lists0 = sorted(zipped_lists0, reverse=True)
-            # # sorted_zipped_lists1 = sorted(zipped_lists1, reverse=True)
-            # # sorted_zipped_lists2 = sorted(zipped_lists2, reverse=True)
-            # # sorted_zipped_lists3 = sorted(zipped_lists3, reverse=True)
-            # # print(sorted_zipped_lists3)
-            # # print(sorted_zipped_lists2)
-            # # print(sorted_zipped_lists0)
-            # # print(sorted_zipped_lists1)
-            # size = len(sorted_zipped_lists0)
-            #     # print(size)
-            # # # print(size)
-            # dist_final0 = []
-            # # dist_final1 = []
-            # # dist_final2 = []
-            # # dist_final3 = []
-            # #         print(sorted_zipped_lists0)
-            # print(size)
-            # for e in range(6):
-            #     if e > 0:
-            #         calc0 = abs(sorted_zipped_lists0[e][1] - sorted_zipped_lists0[e - 1][1])
-            #         print(calc0)
-            # # calc1 = abs(sorted_zipped_lists1[e][1] - sorted_zipped_lists1[e - 1][1])
-            # # calc2 = abs(sorted_zipped_lists2[e][1] - sorted_zipped_lists2[e - 1][1])
-            # # calc3 = abs(sorted_zipped_lists3[e][1] - sorted_zipped_lists3[e - 1][1])
-            #         dist_final0.append(calc0)
-            # # dist_final1.append(calc1)
-            # # dist_final2.append(calc2)
-            # # dist_final3.append(calc3)
-            #         self.distg1 = sum(dist_final0)
-            # # self.distg2 = sum(dist_final1)
-            # self.distg3 = sum(dist_final2)
-            # self.distg4 = sum(dist_final3)
-
-            # if aulas[i].get_grupo().get_nome() == 'g1':
-            #     distance = aulas[i].get_sala().get_distancia()
-            #     bloco = aulas[i].get_bloco().get_id()
-            #     globals()[f"self.blocos{m}"].append(bloco)
-            #     self.distance.append(distance)
-            #     zipped_lists = zip(self.blocos, self.distance)
-            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
-            #     tamanho = len(sorted_zipped_lists)
-            #     dist_final = []
-            #     for e in range(tamanho):
-            #         if e > 0:
-            #             # print(sorted_zipped_lists[e][1])
-            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
-            #             dist_final.append(calc)
-            #     self.distg1 = sum(dist_final)
-
-            # if aulas[i].get_grupo().get_nome() == 'g2':
-            #     distance = aulas[i].get_sala().get_distancia()
-            #     bloco = aulas[i].get_bloco().get_id()
-            #     self.blocos.append(bloco)
-            #     self.distance.append(distance)
-            #     zipped_lists = zip(self.blocos, self.distance)
-            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
-            #     tamanho = len(sorted_zipped_lists)
-            #     dist_final = []
-            #     for e in range(tamanho):
-            #         if e > 0:
-            #             # print(sorted_zipped_lists[e][1])
-            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
-            #             dist_final.append(calc)
-            #     self.distg2 = sum(dist_final)
-            #
-            # if aulas[i].get_grupo().get_nome() == 'g3':
-            #     distance = aulas[i].get_sala().get_distancia()
-            #     bloco = aulas[i].get_bloco().get_id()
-            #     self.blocos.append(bloco)
-            #     self.distance.append(distance)
-            #     zipped_lists = zip(self.blocos, self.distance)
-            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
-            #     tamanho = len(sorted_zipped_lists)
-            #     dist_final = []
-            #     for e in range(tamanho):
-            #         if e > 0:
-            #             # print(sorted_zipped_lists[e][1])
-            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
-            #             dist_final.append(calc)
-            #     self.distg3 = sum(dist_final)
-            #
-            # if aulas[i].get_grupo().get_nome() == 'g4':
-            #     distance = aulas[i].get_sala().get_distancia()
-            #     bloco = aulas[i].get_bloco().get_id()
-            #     self.blocos.append(bloco)
-            #     self.distance.append(distance)
-            #     zipped_lists = zip(self.blocos, self.distance)
-            #     sorted_zipped_lists = sorted(zipped_lists, reverse=True)
-            #     tamanho = len(sorted_zipped_lists)
-            #     dist_final = []
-            #     for e in range(tamanho):
-            #         if e > 0:
-            #             # print(sorted_zipped_lists[e][1])
-            #             calc = abs(sorted_zipped_lists[e][1] - sorted_zipped_lists[e - 1][1])
-            #             dist_final.append(calc)
-            #     self.distg4 = sum(dist_final)
-
             self.total_distance = self.distg4 + self.distg1 + self.distg2 + self.distg3
-
         return self.total_distance + abs(1 - math.exp(7 * self._numdeIncompatibilidades))
 
         # return self.total_distance
@@ -592,12 +478,26 @@ class Horario:
 
 
 class Population:
+    global restart
+
     def __init__(self, size):
-        self._size = size
-        self._data = data
-        self._horarios = []
-        for i in range(size):
-            self._horarios.append(Horario().initialize())
+        global count_in
+        if restart:
+            count_in += 1
+            # print(count_in)
+            self._size = size
+            self._data = data
+            tamanho = int(size / 2)
+            self._horarios = []
+            self._horarios = pop_restart
+            for i in range(tamanho):
+                self._horarios.append(Horario().initialize())
+        else:
+            self._size = size
+            self._data = data
+            self._horarios = []
+            for i in range(size):
+                self._horarios.append(Horario().initialize())
 
     def get_horarios(self):
         return self._horarios
@@ -780,96 +680,143 @@ class DisplayMgr:
         pass
 
 
-data = Data()
-display = DisplayMgr()
-display.print_available_data()
+max_it = 10
+POPULATION_SIZE = 15
+TOURNAMENT_SELECTION_SIZE = POPULATION_SIZE / 3
+MUTATION_RATE = 0.01
 
-generation_number = 0
-print("\n> Generation #", generation_number)
-
-population = Population(POPULATION_SIZE)
-# population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
-population.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
-display.print_generation(population)
-geneticAlgorithm = GeneticAlgorithm()
-
-i = 0
-# new_dist =
-# print('okay' + str(new_dist))
 dist_gra = []
 dist_old = 0
 dist_max = []
 dist_mean = []
 dists = []
-while population.get_horarios()[0].get_fobjetivo() > dist_old or \
-        population.get_horarios()[0].get_numdeIncompatibilidades() != 0:
+for j in range(max_it):
 
-    new_dist = population.get_horarios()[0].get_fobjetivo()
-    max_dist = population.get_horarios()[-1].get_fobjetivo()
-    dists = []
-    for y in range(POPULATION_SIZE - 1):
-        distancia = population.get_horarios()[y].get_fobjetivo()
-        dists.append(distancia)
+    if 1 <= j < 3:
+        POPULATION_SIZE = POPULATION_SIZE * 2
+        TOURNAMENT_SELECTION_SIZE = POPULATION_SIZE / 3
+        MUTATION_RATE = MUTATION_RATE
+        restart = True
 
-    dist_mean.append(sum(dists) / len(dists))
+    if j >= 3:
+        POPULATION_SIZE = POPULATION_SIZE * 2
+        TOURNAMENT_SELECTION_SIZE = POPULATION_SIZE / 3
+        MUTATION_RATE = MUTATION_RATE + 0.05
+        restart = True
 
-    if new_dist < dist_old:
-        new_dist = dist_old
+    # dist_gra = []
+    # dist_old = 0
+    # dist_max = []
+    # dist_mean = []
+    # dists = []
 
-    generation_number += 1
-    print("\n> Iteração #", generation_number)
-    population = geneticAlgorithm.evolve(population)
-    # population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+    data = Data()
+    display = DisplayMgr()
+    display.print_available_data()
+
+    generation_number = 0
+    print("\n> Generation #", generation_number)
+
+    population = Population(POPULATION_SIZE)
     population.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
+    print('okay my new pop has ' + str(len(population.get_horarios())))
     display.print_generation(population)
-    display.print_schedule_as_table(population.get_horarios()[0])
+    geneticAlgorithm = GeneticAlgorithm()
+    j += 1
+    i = 0
+    count = 0
+    pop_restart = []
+    restart = False
+    while population.get_horarios()[0].get_fobjetivo() > dist_old or \
+            population.get_horarios()[0].get_numdeIncompatibilidades() != 0:
 
-    print('Resultado Função Objetivo - Distancia Total: ' + str(new_dist))
-    dist_gra.append(new_dist)
-    dist_max.append(max_dist)
+        new_dist = population.get_horarios()[0].get_fobjetivo()
+        max_dist = population.get_horarios()[-1].get_fobjetivo()
+        dists = []
+        for y in range(POPULATION_SIZE - 1):
+            distancia = population.get_horarios()[y].get_fobjetivo()
+            dists.append(distancia)
 
-    # display.print_mean(population)
-    # display.print_std(population)
-    i += 1
-    if i >= 20000:
+        dist_mean.append(sum(dists) / len(dists))
+
+        if new_dist < dist_old:
+            new_dist = dist_old
+
+        generation_number += 1
+        print("\n> Iteração #", generation_number)
+        population = geneticAlgorithm.evolve(population)
+        # population.get_horarios().sort(key=lambda x: x.get_fitness(), reverse=True)
+        population.get_horarios().sort(key=lambda x: x.get_fobjetivo(), reverse=False)
+        # display.print_generation(population)
+        # display.print_schedule_as_table(population.get_horarios()[0])
+        # display.print_schedule_as_table(population.get_horarios)
+
+        dist_gra.append(new_dist)
+        dist_max.append(max_dist)
+        if i >= 1:
+            if dist_gra[-1] == dist_gra[-2]:
+                count += 1
+            else:
+                count = 0
+
+        if count > 700:
+            pop_restart = population.get_horarios()
+            print(len(pop_restart))
+            break
+        print('restart is ' + str(restart))
+        print('this is the count ' + str(count))
+        print('population size is ' + str(POPULATION_SIZE))
+        print('this is size of pop' + str(len(population.get_horarios())))
+        print('this is avalicoes' + str(avalicoes))
+        print('Resultado Função Objetivo - Distancia Total: ' + str(new_dist))
+
+        # display.print_mean(population)
+        # display.print_std(population)
+        i += 1
+        if i >= 20000:
+            break
+
+        if avalicoes >= 1000000:
+            break
+    if avalicoes >= 1000000:
         break
 
-    # print(new_dist)
+distancia_min = dist_gra
+iteracao = np.linspace(0, 2000000, len(distancia_min))
+distancia_max = distancia_min[1000:]
+iteracao2 = np.linspace(1000, 100000, len(distancia_max))
 
-    distancia_min = dist_gra
-    iteracao = list(range(0, generation_number))
-    distancia_max = dist_max
-    distancia_mean = dist_mean
+distancia_mean = dist_mean
 
-    df = pd.DataFrame({
-        'x_axis': iteracao,
-        'y_axis': distancia_min})
+df = pd.DataFrame({
+    'x_axis': iteracao,
+    'y_axis': distancia_min})
 
-    df_max = pd.DataFrame({
-        'x_axis': iteracao,
-        'y_axis': distancia_max})
+df_max = pd.DataFrame({
+    'x_axis': iteracao2,
+    'y_axis': distancia_max})
 
-    df_mean = pd.DataFrame({
-        'x_axis': iteracao,
-        'y_axis': distancia_mean})
+df_mean = pd.DataFrame({
+    'x_axis': iteracao,
+    'y_axis': distancia_mean})
 
-    plt.autoscale(enable=True, axis='both', tight=None)
-    plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o', color='r', label='Min dist')
-    # plt.plot('x_axis', 'y_axis', data=df_max, linestyle='-', marker='o', color='g', label='Max dist')
-    plt.plot('x_axis', 'y_axis', data=df_mean, linestyle='-', marker='o', color='b', label='Mean dist')
-    plt.yscale('log')
-    # plt.xscale('log')
-    plt.title('Minimização distâncias percorridas em horários')
-    plt.xlabel('No de Iterações')
-    plt.ylabel('Função Objetivo (m)')
+plt.autoscale(enable=True, axis='both', tight=None)
+# plt.plot('x_axis', 'y_axis', data=df, linestyle='-', marker='o', color='r', label='Min dist')
+plt.plot('x_axis', 'y_axis', data=df_max, linestyle='-', marker='o', color='g', label='Max dist')
+# plt.plot('x_axis', 'y_axis', data=df_mean, linestyle='-', marker='o', color='b', label='Mean dist')
+# plt.yscale('log')
+plt.xscale('log')
+plt.title('Minimização distâncias percorridas em horários')
+plt.xlabel('No de avaliações da FO')
+plt.ylabel('Função Objetivo (m)')
 
-
-    plt.pause(0.5)
-    # plt.legend()
-    # sys.stdout.close()
-end_time = time.time()
-tempo = (end_time - start_time) / 60
-print('Elapsed time is ' + str(tempo) + ' minutes')
+display.print_schedule_as_table(population.get_horarios()[0])
+# plt.show()
+# sys.stdout.close()
+end = time.time()
+tempo = end - start_time
+print('Elapsed time is ' + str(tempo / 60) + ' minutes')
+print('min da FO is ' + str(distancia_min[-1]))
+print(f'this is len {len(distancia_min)}')
+print('this is the final distance array')
 print(distancia_min)
-print(iteracao)
-plt.show()
